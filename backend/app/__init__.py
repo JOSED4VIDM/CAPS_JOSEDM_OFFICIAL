@@ -1,0 +1,1 @@
+"""CAPZONE FastAPI backend package."""
