@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CAPZONE{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav">
+            <a href="{% url 'catalog' %}" class="brand">CAPZONE</a>
+            <nav class="main-links">
+                <a href="{% url 'catalog' %}">Catalog</a>
+                <a href="#">Collections</a>
+                <a href="#">New Arrivals</a>
+                <a href="{% url 'admin_dashboard' %}">Admin</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="auth-mini-tabs">
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'register' %}" class="nav-link">Register</a>
+                </div>
+                <a href="{% url 'cart' %}" class="cart-pill">Cart ({{ cart_count }})</a>
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="container message-stack">
+            {% for message in messages %}
+                <div class="flash-message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div>
+                <h4>CAPZONE</h4>
+                <p>Premium caps for everyday expression.</p>
+            </div>
+            <div>
+                <p>Instagram</p>
+                <p>Support</p>
+            </div>
+            <div>
+                <p>Shipping</p>
+                <p>Returns</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}CAPZONE | Register{% endblock %}
+{% block content %}
+<section class="container auth-page">
+    <div class="auth-card">
+        <div class="auth-tabs">
+            <a href="{% url 'login' %}" class="auth-tab">Login</a>
+            <a href="{% url 'register' %}" class="auth-tab active">Register</a>
+        </div>
+        <h2>Create account</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label>Full name
+                <input type="text" name="full_name" required>
+            </label>
+            <label>Email
+                <input type="email" name="email" required>
+            </label>
+            <label>Password
+                <input type="password" name="password" required>
+            </label>
+            <button type="submit" class="primary-btn full-width">Create account</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+</section>
+{% endblock %}
