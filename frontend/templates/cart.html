@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}CAPZONE | Cart{% endblock %}
+{% block content %}
+<section class="container cart-page">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Your bag</span>
+            <h2>Shopping cart</h2>
+        </div>
+    </div>
+
+    {% if cart_items %}
+    <div class="cart-layout">
+        <div class="cart-list">
+            {% for entry in cart_items %}
+            <div class="cart-item">
+                <img src="{{ entry.product.image_url }}" alt="{{ entry.product.name }}">
+                <div class="item-info">
+                    <h3>{{ entry.product.name }}</h3>
+                    <p>{{ entry.product.category }}</p>
+                    <div class="qty-row">
+                        <span>Qty: {{ entry.quantity }}</span>
+                        <a href="{% url 'remove_from_cart' entry.product.id %}" class="text-link">Remove</a>
+                    </div>
+                </div>
+                <strong>${{ entry.product.price }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+
+        <aside class="summary-panel">
+            <h3>Order summary</h3>
+            <div class="summary-line"><span>Subtotal</span><span>${{ subtotal }}</span></div>
+            <div class="summary-line"><span>Shipping</span><span>Free</span></div>
+            <div class="summary-line total"><span>Total</span><span>${{ subtotal }}</span></div>
+            <a href="{% url 'checkout' %}" class="primary-btn full-width">Proceed to checkout</a>
+        </aside>
+    </div>
+    {% else %}
+    <div class="empty-state">Your cart is empty. Start with our latest arrivals.</div>
+    {% endif %}
+</section>
+{% endblock %}
