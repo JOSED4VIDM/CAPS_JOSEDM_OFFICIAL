@@ -1,20 +1,23 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Catalog{% endblock %}
+{% block title %}CAPZONE | Gorras esenciales{% endblock %}
 {% block content %}
 <section class="hero">
     <div class="container hero-grid">
-        <div>
-            <span class="eyebrow">New season</span>
-            <h1>Premium caps for city movement.</h1>
-            <p>Streetwear silhouettes, performance materials, and elevated essentials made for the everyday.</p>
+        <div class="hero-copy">
+            <span class="eyebrow">CAPZONE · Colección 2026</span>
+            <h1>Tu estilo.<br>Tu forma de llevarlo.</h1>
+            <p>Diseños esenciales, detalles cuidados y comodidad para acompañarte todos los días.</p>
             <div class="hero-actions">
-                <a class="primary-btn" href="#catalog">Shop now</a>
-                <a class="secondary-btn" href="{% url 'login' %}">Become a member</a>
+                <a class="primary-btn" href="#catalog">Descubrir colección</a>
+                <a class="secondary-btn" href="{% url 'register' %}">Únete a CAPZONE</a>
             </div>
         </div>
         <div class="hero-card">
-            <div class="hero-badge">Best sellers</div>
-            <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80" alt="CAPZONE cap collection">
+            <a class="hero-art" href="{% url 'product_detail' products.0.slug %}" aria-label="Ver {{ products.0.name }}">
+                <span class="hero-index">01 — PIEZA DESTACADA</span>
+                <img src="{{ products.0.image_url }}" alt="{{ products.0.name }}" fetchpriority="high">
+                <span class="hero-art-label">Explorar la colección</span>
+            </a>
         </div>
     </div>
 </section>
@@ -22,36 +25,60 @@
 <section id="catalog" class="catalog-section container">
     <div class="section-heading">
         <div>
-            <span class="eyebrow">Catalog</span>
-            <h2>Featured pieces</h2>
+            <span class="eyebrow">Hechas para todos los días</span>
+            <h2 id="new-arrivals">La colección</h2>
         </div>
-        <button class="filter-button">Filter</button>
     </div>
+
+    <div class="catalog-tools">
+        <div class="category-filters" id="categories" role="group" aria-label="Filtrar por categoría">
+            <button type="button" class="category-filter is-active" data-category-filter="all" aria-pressed="true">Todas</button>
+            {% for product in products %}
+                {% ifchanged product.category %}
+                <button type="button" class="category-filter" data-category-filter="{{ product.category|lower }}" aria-pressed="false">{{ product.category }}</button>
+                {% endifchanged %}
+            {% endfor %}
+        </div>
+        <div class="catalog-controls">
+            <label class="sr-only" for="catalog-search">Buscar productos</label>
+            <input class="catalog-search" id="catalog-search" type="search" placeholder="Buscar gorras..." autocomplete="off">
+            <label class="sr-only" for="catalog-sort">Ordenar productos</label>
+            <select class="catalog-sort" id="catalog-sort">
+                <option value="featured">Destacados</option>
+                <option value="price-asc">Precio: menor a mayor</option>
+                <option value="price-desc">Precio: mayor a menor</option>
+                <option value="name">Nombre: A–Z</option>
+            </select>
+        </div>
+    </div>
+    <p class="catalog-count" aria-live="polite"></p>
 
     <div class="product-grid">
         {% for product in products %}
-        <article class="product-card">
-            <a href="{% url 'product_detail' product.slug %}">
-                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+        <article class="product-card" data-category="{{ product.category|lower }}" data-name="{{ product.name|lower }}" data-price="{{ product.price }}">
+            <a href="{% url 'product_detail' product.slug %}" class="product-visual">
+                <span class="product-badge">{% if not product.in_stock %}Agotada{% elif forloop.first %}Más vendida{% else %}{{ product.category }}{% endif %}</span>
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
             </a>
             <div class="product-info">
                 <span class="category-tag">{{ product.category }}</span>
                 <h3>{{ product.name }}</h3>
                 <div class="product-meta">
-                    <span>★ {{ product.rating }}</span>
-                    <span>{{ product.reviews }} reviews</span>
+                    <span aria-label="Calificación {{ product.rating }} de 5">★ {{ product.rating }}</span>
+                    <span>{{ product.reviews }} opiniones</span>
                 </div>
                 <div class="price-block">
-                    <span class="price">${{ product.price }}</span>
-                    <span class="old-price">${{ product.original_price }}</span>
+                    <span class="price">${{ product.price|floatformat:2 }}</span>
+                    {% if product.original_price > product.price %}<span class="old-price">${{ product.original_price|floatformat:2 }}</span>{% endif %}
                 </div>
                 <div class="card-actions">
-                    <a class="secondary-btn" href="{% url 'product_detail' product.slug %}">View Details</a>
-                    <a class="primary-btn" href="{% url 'add_to_cart' product.id %}">Add to cart</a>
+                    <a class="secondary-btn" href="{% url 'product_detail' product.slug %}">Ver detalles</a>
+                    {% if product.in_stock %}<a class="primary-btn" href="{% url 'add_to_cart' product.id %}">Añadir a bolsa</a>{% else %}<span class="secondary-btn" aria-disabled="true">Agotada</span>{% endif %}
                 </div>
             </div>
         </article>
         {% endfor %}
     </div>
+    <p class="no-results" hidden>No encontramos productos con esa búsqueda.</p>
 </section>
 {% endblock %}

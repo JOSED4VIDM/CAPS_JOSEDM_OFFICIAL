@@ -2,20 +2,21 @@
 {% block title %}CAPZONE | {{ product.name }}{% endblock %}
 {% block content %}
 <section class="container product-page">
+    <p class="breadcrumb"><a href="{% url 'catalog' %}">Tienda</a> &nbsp;/&nbsp; {{ product.category }} &nbsp;/&nbsp; {{ product.name }}</p>
     <div class="product-detail">
         <div class="detail-image-wrap">
             <img src="{{ product.image_url }}" alt="{{ product.name }}" class="detail-image">
         </div>
         <div class="detail-content">
-            <span class="eyebrow">{{ product.category }}</span>
+            <span class="eyebrow">{{ product.category }} · CAPZONE</span>
             <h1>{{ product.name }}</h1>
             <div class="product-meta">
                 <span>★ {{ product.rating }}</span>
-                <span>{{ product.reviews }} reviews</span>
+                <span>{{ product.reviews }} opiniones</span>
             </div>
             <div class="price-block big">
-                <span class="price">${{ product.price }}</span>
-                <span class="old-price">${{ product.original_price }}</span>
+                <span class="price">${{ product.price|floatformat:2 }}</span>
+                {% if product.original_price > product.price %}<span class="old-price">${{ product.original_price|floatformat:2 }}</span>{% endif %}
             </div>
             <p>{{ product.description }}</p>
             <ul class="feature-list">
@@ -24,8 +25,8 @@
                 {% endfor %}
             </ul>
             <div class="detail-actions">
-                <a href="{% url 'add_to_cart' product.id %}" class="primary-btn">Add to cart</a>
-                <a href="{% url 'catalog' %}" class="secondary-btn">Continue shopping</a>
+                {% if product.in_stock %}<a href="{% url 'add_to_cart' product.id %}" class="primary-btn">Añadir a bolsa</a>{% else %}<span class="secondary-btn" aria-disabled="true">Producto agotado</span>{% endif %}
+                <a href="{% url 'catalog' %}#catalog" class="secondary-btn">Seguir explorando</a>
             </div>
         </div>
     </div>

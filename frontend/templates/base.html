@@ -1,9 +1,10 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
     <title>{% block title %}CAPZONE{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,19 +14,41 @@
 <body>
     <header class="topbar">
         <div class="container nav">
-            <a href="{% url 'catalog' %}" class="brand">CAPZONE</a>
-            <nav class="main-links">
-                <a href="{% url 'catalog' %}">Catalog</a>
-                <a href="#">Collections</a>
-                <a href="#">New Arrivals</a>
+            <a href="{% url 'catalog' %}" class="brand" aria-label="CAPZONE, inicio">
+                <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 16.5c2.8-5.3 7-8 12.6-8 2.2 0 4 .5 5.4 1.5-2.8.2-4.9 1.3-6.2 3.4-1.6 2.5-4 3.8-7.2 3.8H3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M6 17.2h13.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <span>CAPZONE</span>
+            </a>
+            <nav class="main-links" id="main-navigation" aria-label="Navegación principal">
+                <a href="{% url 'catalog' %}#catalog">Tienda</a>
+                <a href="{% url 'catalog' %}#categories">Colecciones</a>
+                <a href="{% url 'catalog' %}#new-arrivals">Novedades</a>
                 <a href="{% url 'admin_dashboard' %}">Admin</a>
+                <div class="mobile-auth-links">
+                    <a href="{% url 'login' %}">Iniciar sesión</a>
+                    <a href="{% url 'register' %}">Crear cuenta</a>
+                </div>
             </nav>
             <div class="nav-actions">
                 <div class="auth-mini-tabs">
-                    <a href="{% url 'login' %}" class="nav-link">Login</a>
-                    <a href="{% url 'register' %}" class="nav-link">Register</a>
+                    <a href="{% url 'login' %}" class="nav-link">Ingresar</a>
+                    <a href="{% url 'register' %}" class="nav-link">Cuenta</a>
                 </div>
-                <a href="{% url 'cart' %}" class="cart-pill">Cart ({{ cart_count }})</a>
+                <a href="{% url 'cart' %}" class="cart-pill" aria-label="Bolsa, {{ cart_count }} productos">
+                    <svg class="cart-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 5h2l2.1 10.1a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 1.9-1.4L21 9H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="10" cy="20" r="1" fill="currentColor"/>
+                        <circle cx="18" cy="20" r="1" fill="currentColor"/>
+                    </svg>
+                    Bolsa <span>({{ cart_count }})</span>
+                </a>
+                <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </header>
@@ -46,19 +69,19 @@
         <div class="container footer-content">
             <div>
                 <h4>CAPZONE</h4>
-                <p>Premium caps for everyday expression.</p>
+                <p>Gorras esenciales para cada día.</p>
             </div>
             <div>
                 <p>Instagram</p>
-                <p>Support</p>
+                <p>Atención al cliente</p>
             </div>
             <div>
-                <p>Shipping</p>
-                <p>Returns</p>
+                <p>Envíos</p>
+                <p>Devoluciones</p>
             </div>
         </div>
     </footer>
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}" defer></script>
 </body>
 </html>
