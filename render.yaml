@@ -2,6 +2,7 @@ services:
   - type: web
     name: capzone-web-api
     runtime: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
@@ -21,6 +22,7 @@ services:
   - type: web
     name: capzone-web
     runtime: python
+    plan: free
     rootDir: frontend
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: python manage.py migrate --noinput && gunicorn capzone_django.wsgi:application --bind 0.0.0.0:$PORT
