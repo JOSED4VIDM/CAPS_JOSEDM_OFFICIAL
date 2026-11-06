@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load currency %}
+{% block title %}CAPZONE | Mi cuenta{% endblock %}
+{% block content %}
+<section class="container admin-page">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Área de cliente</span>
+            <h2>Hola, {{ user.full_name }}</h2>
+            <p class="account-email">{{ user.email }}</p>
+        </div>
+        <a class="secondary-btn" href="{% url 'catalog' %}#catalog">Seguir comprando</a>
+    </div>
+
+    <div class="section-heading order-heading">
+        <div>
+            <span class="eyebrow">Tu actividad</span>
+            <h2>Mis pedidos</h2>
+        </div>
+    </div>
+
+    {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+            <article class="order-card">
+                <div class="order-card-heading">
+                    <div>
+                        <span class="eyebrow">Pedido</span>
+                        <h3>{{ order.id }}</h3>
+                    </div>
+                    <span class="order-status">{{ order.status|capfirst }}</span>
+                </div>
+                <ul class="order-items">
+                    {% for item in order.items %}
+                    <li><span>{{ item.quantity }} × {{ item.product_name }}</span></li>
+                    {% endfor %}
+                </ul>
+                <div class="summary-line total">
+                    <span>Total</span>
+                    <span>{{ order.total|cop }}</span>
+                </div>
+                <p class="order-address">{{ order.shipping_address }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">Todavía no tienes pedidos. Cuando completes una compra, aparecerá aquí.</div>
+    {% endif %}
+</section>
+{% endblock %}

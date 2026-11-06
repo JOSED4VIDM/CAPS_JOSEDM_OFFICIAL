@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load currency %}
 {% block title %}CAPZONE | {{ product.name }}{% endblock %}
 {% block content %}
 <section class="container product-page">
@@ -15,8 +16,8 @@
                 <span>{{ product.reviews }} opiniones</span>
             </div>
             <div class="price-block big">
-                <span class="price">${{ product.price|floatformat:2 }}</span>
-                {% if product.original_price > product.price %}<span class="old-price">${{ product.original_price|floatformat:2 }}</span>{% endif %}
+                <span class="price">{{ product.price|cop }}</span>
+                {% if product.original_price > product.price %}<span class="old-price">{{ product.original_price|cop }}</span>{% endif %}
             </div>
             <p>{{ product.description }}</p>
             <ul class="feature-list">

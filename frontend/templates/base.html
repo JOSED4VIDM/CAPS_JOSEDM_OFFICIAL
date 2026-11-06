@@ -25,16 +25,30 @@
                 <a href="{% url 'catalog' %}#catalog">Tienda</a>
                 <a href="{% url 'catalog' %}#categories">Colecciones</a>
                 <a href="{% url 'catalog' %}#new-arrivals">Novedades</a>
-                <a href="{% url 'admin_dashboard' %}">Admin</a>
+                {% if request.session.user.is_admin %}
+                    <a href="{% url 'admin_dashboard' %}">Administración</a>
+                {% elif request.session.user %}
+                    <a href="{% url 'customer_account' %}">Mi cuenta</a>
+                {% endif %}
                 <div class="mobile-auth-links">
+                    {% if request.session.user %}
+                    <a href="{% url 'customer_account' %}">Mi cuenta</a>
+                    {% if request.session.user.is_admin %}<a href="{% url 'admin_dashboard' %}">Administración</a>{% endif %}
+                    <a href="{% url 'logout' %}">Cerrar sesión</a>
+                    {% else %}
                     <a href="{% url 'login' %}">Iniciar sesión</a>
                     <a href="{% url 'register' %}">Crear cuenta</a>
+                    {% endif %}
                 </div>
             </nav>
             <div class="nav-actions">
                 <div class="auth-mini-tabs">
+                    {% if request.session.user %}
+                    <a href="{% url 'logout' %}" class="nav-link">Salir</a>
+                    {% else %}
                     <a href="{% url 'login' %}" class="nav-link">Ingresar</a>
                     <a href="{% url 'register' %}" class="nav-link">Cuenta</a>
+                    {% endif %}
                 </div>
                 <a href="{% url 'cart' %}" class="cart-pill" aria-label="Bolsa, {{ cart_count }} productos">
                     <svg class="cart-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">

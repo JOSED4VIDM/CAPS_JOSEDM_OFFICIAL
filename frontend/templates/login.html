@@ -1,24 +1,25 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Login{% endblock %}
+{% block title %}CAPZONE | Iniciar sesión{% endblock %}
 {% block content %}
 <section class="container auth-page">
     <div class="auth-card">
         <div class="auth-tabs">
-            <a href="{% url 'login' %}" class="auth-tab active">Login</a>
-            <a href="{% url 'register' %}" class="auth-tab">Register</a>
+            <a href="{% url 'login' %}" class="auth-tab active">Iniciar sesión</a>
+            <a href="{% url 'register' %}" class="auth-tab">Crear cuenta</a>
         </div>
-        <h2>Welcome back</h2>
+        <span class="eyebrow">Tu espacio CAPZONE</span>
+        <h2>Qué bueno verte</h2>
         <form method="post">
             {% csrf_token %}
-            <label>Email
-                <input type="email" name="email" required>
+            <label>Correo electrónico
+                <input type="email" name="email" autocomplete="email" required>
             </label>
-            <label>Password
-                <input type="password" name="password" required>
+            <label>Contraseña
+                <input type="password" name="password" autocomplete="current-password" required>
             </label>
-            <button type="submit" class="primary-btn full-width">Enter</button>
+            <button type="submit" class="primary-btn full-width">Ingresar</button>
         </form>
-        <p class="auth-switch">Need an account? <a href="{% url 'register' %}">Create one here</a></p>
+        <p class="auth-switch">¿Aún no tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
     </div>
 </section>
 {% endblock %}

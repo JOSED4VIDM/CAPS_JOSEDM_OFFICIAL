@@ -1,18 +1,57 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Admin dashboard{% endblock %}
+{% load currency %}
+{% block title %}CAPZONE | Panel de administración{% endblock %}
 {% block content %}
 <section class="container admin-page">
     <div class="section-heading">
         <div>
-            <span class="eyebrow">Operations</span>
-            <h2>Admin dashboard</h2>
+            <span class="eyebrow">Área de administración</span>
+            <h2>Resumen de la tienda</h2>
         </div>
     </div>
-    <div class="stats-grid">
-        <div class="stat-card"><span>Total products</span><strong>{{ stats.total_products }}</strong></div>
-        <div class="stat-card"><span>Available</span><strong>{{ stats.available_products }}</strong></div>
-        <div class="stat-card"><span>Total orders</span><strong>{{ stats.total_orders }}</strong></div>
-        <div class="stat-card"><span>Revenue</span><strong>${{ stats.revenue }}</strong></div>
+    {% if stats %}
+        <div class="stats-grid">
+            <div class="stat-card"><span>Total de productos</span><strong>{{ stats.total_products }}</strong></div>
+            <div class="stat-card"><span>Disponibles</span><strong>{{ stats.available_products }}</strong></div>
+            <div class="stat-card"><span>Total de pedidos</span><strong>{{ stats.total_orders }}</strong></div>
+            <div class="stat-card"><span>Ingresos (COP)</span><strong>{{ stats.revenue|cop }}</strong></div>
+        </div>
+    {% endif %}
+
+    <div class="section-heading order-heading">
+        <div>
+            <span class="eyebrow">Actividad de la tienda</span>
+            <h2>Pedidos recibidos</h2>
+        </div>
     </div>
+    {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+            <article class="order-card">
+                <div class="order-card-heading">
+                    <div>
+                        <span class="eyebrow">Pedido · {{ order.customer_name|default:"Cliente" }}</span>
+                        <h3>{{ order.id }}</h3>
+                        {% if order.customer_email %}<p class="account-email">{{ order.customer_email }}</p>{% endif %}
+                    </div>
+                    <span class="order-status">{{ order.status|capfirst }}</span>
+                </div>
+                <ul class="order-items">
+                    {% for item in order.items %}
+                    <li><span>{{ item.quantity }} × {{ item.product_name }}</span></li>
+                    {% endfor %}
+                </ul>
+                <div class="summary-line total">
+                    <span>Total</span>
+                    <span>{{ order.total|cop }}</span>
+                </div>
+                <p class="order-address"><strong>Dirección:</strong> {{ order.shipping_address }}</p>
+                <p class="order-address"><strong>Teléfono:</strong> {{ order.contact_phone }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">Todavía no hay pedidos registrados.</div>
+    {% endif %}
 </section>
 {% endblock %}

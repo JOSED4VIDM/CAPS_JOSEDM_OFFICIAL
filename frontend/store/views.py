@@ -5,32 +5,126 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
 API_URL = getattr(settings, "BASE_URL", "http://localhost:8000")
+LOCAL_PRODUCT_CONTENT = {
+    "p-101": {
+        "image": "cap-nyc.jpg",
+        "name": "Gorra New York Negra",
+        "category": "Béisbol",
+        "description": "Gorra negra de perfil estructurado, inspirada en el clásico estilo de Nueva York.",
+        "features": ["Perfil estructurado", "Cierre ajustable", "Visera plana"],
+        "slug": "urban-black-snapback",
+        "price": 39.99,
+        "original_price": 49.99,
+        "rating": 4.8,
+        "reviews": 128,
+        "in_stock": True,
+    },
+    "p-102": {
+        "image": "cap-bulls.jpg",
+        "name": "Gorra Bulls Roja",
+        "category": "Baloncesto",
+        "description": "Diseño rojo de alto contraste para sumar carácter a cualquier combinación urbana.",
+        "features": ["Color rojo intenso", "Cierre ajustable", "Diseño urbano"],
+        "slug": "fresh-run-cap",
+        "price": 34.99,
+        "original_price": 44.99,
+        "rating": 4.7,
+        "reviews": 94,
+        "in_stock": True,
+    },
+    "p-103": {
+        "image": "cap-la.jpg",
+        "name": "Gorra Los Angeles Beige",
+        "category": "Béisbol",
+        "description": "Tono beige versátil con un perfil limpio para usar todos los días.",
+        "features": ["Tono beige", "Perfil estructurado", "Cierre ajustable"],
+        "slug": "monarch-flex-cap",
+        "price": 52.99,
+        "original_price": 64.99,
+        "rating": 4.9,
+        "reviews": 211,
+        "in_stock": True,
+    },
+    "p-104": {
+        "image": "cap-raiders.jpg",
+        "name": "Gorra Raiders Negra",
+        "category": "Fútbol americano",
+        "description": "Una silueta negra clásica con detalles gráficos para un estilo decidido.",
+        "features": ["Diseño negro", "Cierre ajustable", "Visera plana"],
+        "slug": "night-shift-beanie",
+        "price": 29.99,
+        "original_price": 39.99,
+        "rating": 4.6,
+        "reviews": 73,
+        "in_stock": False,
+    },
+    "p-105": {
+        "image": "cap-sox.jpg",
+        "name": "Gorra Chicago a Rayas",
+        "category": "Béisbol",
+        "description": "Gorra negra a rayas con visera blanca, una mezcla deportiva y atemporal.",
+        "features": ["Patrón a rayas", "Visera blanca", "Cierre ajustable"],
+        "slug": "the-street-pro",
+        "price": 46.99,
+        "original_price": 58.99,
+        "rating": 4.8,
+        "reviews": 186,
+        "in_stock": True,
+    },
+    "p-106": {
+        "image": "cap-miami.jpg",
+        "name": "Gorra Miami Negra y Roja",
+        "category": "Baloncesto",
+        "description": "Base negra con detalles rojos para un contraste distintivo y actual.",
+        "features": ["Detalles rojos", "Perfil estructurado", "Cierre ajustable"],
+        "slug": "crest-vintage-cap",
+        "price": 41.49,
+        "original_price": 52.99,
+        "rating": 4.7,
+        "reviews": 142,
+        "in_stock": True,
+    },
+}
+
+
+def localize_products(products):
+    for product in products:
+        content = LOCAL_PRODUCT_CONTENT.get(product.get("id"))
+        if content:
+            product["image_url"] = f"/static/images/{content['image']}"
+            product["name"] = content["name"]
+            product["category"] = content["category"]
+            product["description"] = content["description"]
+            product["features"] = content["features"]
+    return products
 
 
 def get_products():
     try:
         response = requests.get(f"{API_URL}/api/products", timeout=10)
         if response.ok:
-            return response.json()
+            return localize_products(response.json())
     except requests.RequestException:
         pass
-    return [
+    fallback_products = [
         {
-            "id": "p-101",
-            "name": "Urban Black Snapback",
-            "slug": "urban-black-snapback",
-            "category": "Snapback",
-            "price": 39.99,
-            "original_price": 49.99,
-            "rating": 4.8,
-            "reviews": 128,
-            "image_url": "https://images.unsplash.com/photo-1521369909026-2afc9123a8c7?auto=format&fit=crop&w=1200&q=80",
-            "in_stock": True,
-            "description": "A premium urban snapback designed for everyday streetwear styling.",
-            "features": ["Structured fit", "Adjustable closure", "High-quality woven fabric"],
-            "tags": ["best seller", "streetwear"],
+            "id": product_id,
+            "name": content["name"],
+            "slug": content["slug"],
+            "category": content["category"],
+            "price": content["price"],
+            "original_price": content["original_price"],
+            "rating": content["rating"],
+            "reviews": content["reviews"],
+            "image_url": f"/static/images/{content['image']}",
+            "in_stock": content["in_stock"],
+            "description": content["description"],
+            "features": content["features"],
+            "tags": ["colección CAPZONE"],
         }
+        for product_id, content in LOCAL_PRODUCT_CONTENT.items()
     ]
+    return localize_products(fallback_products)
 
 
 def cart_summary(request):
@@ -41,14 +135,15 @@ def cart_summary(request):
 
 def catalog(request: HttpRequest):
     products = get_products()
-    return render(request, "catalog.html", {"products": products, "cart_count": cart_summary(request)})
+    categories = list(dict.fromkeys(product["category"] for product in products))
+    return render(request, "catalog.html", {"products": products, "categories": categories, "cart_count": cart_summary(request)})
 
 
 def product_detail(request: HttpRequest, slug: str):
     products = get_products()
     product = next((item for item in products if item["slug"] == slug), None)
     if not product:
-        return HttpResponse("Product not found", status=404)
+        return HttpResponse("No encontramos ese producto.", status=404)
     return render(request, "product_detail.html", {"product": product, "cart_count": cart_summary(request)})
 
 
@@ -83,6 +178,10 @@ def cart(request: HttpRequest):
 
 
 def checkout(request: HttpRequest):
+    if not request.session.get("token"):
+        messages.info(request, "Inicia sesión para finalizar tu compra y consultar tus pedidos.")
+        return redirect("login")
+
     if request.method == "POST":
         cart = request.session.get("cart", {})
         if not cart:
@@ -90,18 +189,32 @@ def checkout(request: HttpRequest):
             return redirect("catalog")
         order_payload = {
             "items": [{"product_id": product_id, "quantity": details.get("quantity", 1)} for product_id, details in cart.items()],
-            "shipping_address": request.POST.get("shipping_address", "Main street 123"),
-            "contact_phone": request.POST.get("contact_phone", "+57 300 000 0000"),
+            "shipping_address": request.POST.get("shipping_address", ""),
+            "contact_phone": request.POST.get("contact_phone", "").strip(),
         }
+        if not order_payload["shipping_address"].strip() or not order_payload["contact_phone"]:
+            messages.error(request, "Escribe tu dirección y teléfono para continuar.")
+            return redirect("checkout")
         try:
-            response = requests.post(f"{API_URL}/api/orders", json=order_payload, timeout=10)
+            response = requests.post(
+                f"{API_URL}/api/orders",
+                json=order_payload,
+                headers={"Authorization": f"Bearer {request.session['token']}"},
+                timeout=10,
+            )
             if response.ok:
                 request.session["cart"] = {}
-                messages.success(request, "Pedido creado con éxito")
-                return redirect("catalog")
+                messages.success(request, "Tu pedido se creó correctamente.")
+                return redirect("customer_account")
+            if response.status_code == 401:
+                request.session.pop("token", None)
+                request.session.pop("user", None)
+                messages.error(request, "Tu sesión venció. Inicia sesión para continuar.")
+                return redirect("login")
         except requests.RequestException:
-            pass
-        messages.error(request, "No se pudo completar la compra. Intenta de nuevo.")
+            messages.error(request, "No fue posible conectar con la tienda. Inténtalo de nuevo.")
+            return redirect("checkout")
+        messages.error(request, "No se pudo completar la compra. Inténtalo de nuevo.")
         return redirect("cart")
     return render(request, "checkout.html", {"cart_count": cart_summary(request)})
 
@@ -116,10 +229,18 @@ def login_view(request: HttpRequest):
                 request.session["token"] = data["token"]
                 request.session["user"] = data["user"]
                 messages.success(request, "Inicio de sesión correcto")
-                return redirect("catalog")
-            messages.error(request, data.get("detail", "Credenciales inválidas"))
+                if data["user"].get("is_admin"):
+                    return redirect("admin_dashboard")
+                return redirect("customer_account")
+            detail = data.get("detail", "")
+            translated_errors = {
+                "Invalid credentials": "El correo o la contraseña no son correctos.",
+                "Authentication required": "Inicia sesión para continuar.",
+                "Invalid token": "La sesión no es válida. Inicia sesión de nuevo.",
+            }
+            messages.error(request, translated_errors.get(detail, detail or "El correo o la contraseña no son correctos."))
         except requests.RequestException:
-            messages.error(request, "No fue posible iniciar sesión")
+            messages.error(request, "No fue posible iniciar sesión. Inténtalo de nuevo.")
     return render(request, "login.html", {"cart_count": cart_summary(request)})
 
 
@@ -136,9 +257,14 @@ def register_view(request: HttpRequest):
             if response.ok:
                 messages.success(request, "Cuenta creada con éxito")
                 return redirect("login")
-            messages.error(request, data.get("detail", "No se pudo crear la cuenta"))
+            detail = data.get("detail", "")
+            translated_errors = {
+                "Email already registered": "Este correo ya tiene una cuenta registrada.",
+                "Invalid email address": "El correo electrónico no es válido.",
+            }
+            messages.error(request, translated_errors.get(detail, detail or "No se pudo crear la cuenta."))
         except requests.RequestException:
-            messages.error(request, "No fue posible registrar la cuenta")
+            messages.error(request, "No fue posible crear la cuenta. Inténtalo de nuevo.")
     return render(request, "register.html", {"cart_count": cart_summary(request)})
 
 
@@ -148,10 +274,95 @@ def logout_view(request: HttpRequest):
     return redirect("catalog")
 
 
-def admin_dashboard(request: HttpRequest):
+def customer_account(request: HttpRequest):
+    user = request.session.get("user")
+    token = request.session.get("token")
+    if not user or not token:
+        messages.info(request, "Inicia sesión para consultar tu cuenta y tus pedidos.")
+        return redirect("login")
+
     try:
-        response = requests.get(f"{API_URL}/api/admin/summary", timeout=10)
-        stats = response.json() if response.ok else {"total_products": 0, "available_products": 0, "total_orders": 0, "revenue": 0}
+        response = requests.get(
+            f"{API_URL}/api/orders/me",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=10,
+        )
+        if response.status_code == 401:
+            request.session.pop("token", None)
+            request.session.pop("user", None)
+            messages.error(request, "Tu sesión venció. Inicia sesión de nuevo.")
+            return redirect("login")
+        response.raise_for_status()
+        orders = response.json()
     except requests.RequestException:
-        stats = {"total_products": 0, "available_products": 0, "total_orders": 0, "revenue": 0}
-    return render(request, "admin_dashboard.html", {"stats": stats, "cart_count": cart_summary(request)})
+        messages.error(request, "No fue posible cargar tus pedidos. Inténtalo de nuevo.")
+        orders = []
+
+    products = {product["id"]: product for product in get_products()}
+    for order in orders:
+        order["status"] = translate_order_status(order.get("status", "pendiente"))
+        for item in order.get("items", []):
+            product = products.get(item.get("product_id"))
+            item["product_name"] = product["name"] if product else "Producto"
+
+    return render(
+        request,
+        "customer_account.html",
+        {"user": user, "orders": orders, "cart_count": cart_summary(request)},
+    )
+
+
+def translate_order_status(status: str) -> str:
+    return {
+        "pending": "Pendiente",
+        "pendiente": "Pendiente",
+        "processing": "En preparación",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado",
+    }.get(status.lower(), status.capitalize())
+
+
+def admin_dashboard(request: HttpRequest):
+    user = request.session.get("user")
+    token = request.session.get("token")
+    if not user or not token:
+        messages.info(request, "Inicia sesión con la cuenta de administración.")
+        return redirect("login")
+    if not user.get("is_admin"):
+        messages.error(request, "Esta sección es exclusiva para administración.")
+        return redirect("customer_account")
+
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        summary_response = requests.get(f"{API_URL}/api/admin/summary", headers=headers, timeout=10)
+        summary_response.raise_for_status()
+        orders_response = requests.get(f"{API_URL}/api/orders", headers=headers, timeout=10)
+        orders_response.raise_for_status()
+        stats = summary_response.json()
+        orders = orders_response.json()
+    except requests.HTTPError as exc:
+        if exc.response is not None and exc.response.status_code == 401:
+            request.session.pop("token", None)
+            request.session.pop("user", None)
+            messages.error(request, "Tu sesión venció. Inicia sesión de nuevo.")
+            return redirect("login")
+        messages.error(request, "No tienes permiso para consultar la administración.")
+        return redirect("customer_account")
+    except requests.RequestException:
+        messages.error(request, "No fue posible cargar la información de administración.")
+        stats = None
+        orders = []
+
+    products = {product["id"]: product for product in get_products()}
+    for order in orders:
+        order["status"] = translate_order_status(order.get("status", "pendiente"))
+        for item in order.get("items", []):
+            product = products.get(item.get("product_id"))
+            item["product_name"] = product["name"] if product else "Producto"
+
+    return render(
+        request,
+        "admin_dashboard.html",
+        {"stats": stats, "orders": orders, "cart_count": cart_summary(request)},
+    )

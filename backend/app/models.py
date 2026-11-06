@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ProductBase(BaseModel):
@@ -54,13 +55,21 @@ class CartItemInput(BaseModel):
 
 class CartItem(BaseModel):
     product_id: str
-    quantity: int
+    quantity: int = Field(default=1, gt=0)
 
 
 class OrderCreate(BaseModel):
-    items: List[CartItem]
-    shipping_address: str
-    contact_phone: str
+    items: List[CartItem] = Field(min_length=1)
+    shipping_address: str = Field(min_length=1)
+    contact_phone: str = Field(min_length=1)
+
+    @field_validator("shipping_address", "contact_phone")
+    @classmethod
+    def require_non_whitespace(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Este campo es obligatorio.")
+        return value
 
 
 class Order(BaseModel):
@@ -71,3 +80,6 @@ class Order(BaseModel):
     shipping_address: str
     contact_phone: str
     status: str = "pending"
+    customer_name: Optional[str] = None
+    customer_email: Optional[str] = None
+    created_at: Optional[datetime] = None

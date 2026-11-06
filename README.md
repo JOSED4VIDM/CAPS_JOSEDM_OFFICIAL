@@ -8,41 +8,40 @@ CAPZONE is a hybrid e-commerce project built with Django on the frontend and Fas
 - Frontend: Django MVT + templates + static assets
 - Database: MongoDB Atlas (production) with in-memory fallback for local development
 
-## Local development
+## Ejecución local
 
-Requirements: Python 3.12+ is recommended for compatibility with the current FastAPI/Pydantic stack.
+Se recomienda Python 3.12 o posterior.
 
-1. Create a virtual environment and install dependencies:
+1. Crea un entorno virtual e instala las dependencias desde la raíz del proyecto:
    ```bash
    python -m venv .venv
    .venv\Scripts\activate
    pip install -r backend/requirements.txt
    pip install -r frontend/requirements.txt
    ```
-2. Copy environment files:
-   ```bash
-   copy backend/.env.example backend/.env
-   copy frontend/.env.example frontend/.env
-   ```
-3. Start the backend:
+2. Configura los archivos `.env` del backend y del frontend a partir de sus archivos de ejemplo. En el backend configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`.
+3. En una terminal, crea o actualiza la cuenta administradora. El comando solicita la contraseña de forma oculta y guarda únicamente su hash:
    ```bash
    cd backend
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   python -m app.bootstrap_admin
    ```
-4. Start the Django frontend:
+4. En una terminal, inicia la API:
+   ```bash
+   cd backend
+   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   ```
+5. En otra terminal, inicia la tienda:
    ```bash
    cd frontend
    python manage.py migrate
-   python manage.py runserver 0.0.0.0:8000
+   python manage.py runserver 127.0.0.1:8001
    ```
-5. Visit:
-   - Frontend: http://localhost:8000
-   - API docs: http://localhost:8000/docs
+6. Abre http://127.0.0.1:8001/login/ e inicia sesión con el correo configurado en `ADMIN_EMAIL` y la contraseña elegida en el paso 3. El panel está en http://127.0.0.1:8001/admin-dashboard/ y la cuenta de cliente en http://127.0.0.1:8001/mi-cuenta/. La documentación de la API está en http://127.0.0.1:8000/docs.
 
-## Production notes
+## Notas de producción
 
-- Set `MONGODB_URL` in the backend service environment.
-- Set `API_BASE_URL` in the frontend environment to the deployed FastAPI service.
-- Deploy the root `render.yaml` as a Render Blueprint to create the `capzone-web-api` and `capzone-web` services.
-- Enter the Atlas connection string only in the backend service's Render environment variables; never commit it.
-- The project is designed to use MongoDB Atlas in production without storing credentials in code.
+- Configura `MONGODB_URL` y `ADMIN_EMAIL` en el entorno del servicio backend.
+- El registro público no puede asignar el rol de administrador. Crea o actualiza esa cuenta desde la terminal del backend con `python -m app.bootstrap_admin`; la contraseña se solicita de forma oculta y solo se guarda su hash.
+- Configura `API_BASE_URL` en el entorno del frontend para que apunte al servicio FastAPI desplegado.
+- Despliega el `render.yaml` de la raíz como un Blueprint de Render para crear `capzone-web-api` y `capzone-web`.
+- No incluyas la cadena de conexión de Atlas ni otras credenciales en Git.

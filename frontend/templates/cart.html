@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Cart{% endblock %}
+{% load currency %}
+{% block title %}CAPZONE | Carrito{% endblock %}
 {% block content %}
 <section class="container cart-page">
     <div class="section-heading">
         <div>
-            <span class="eyebrow">Your bag</span>
-            <h2>Shopping cart</h2>
+            <span class="eyebrow">Tu bolsa</span>
+            <h2>Carrito de compras</h2>
         </div>
     </div>
 
@@ -19,25 +20,25 @@
                     <h3>{{ entry.product.name }}</h3>
                     <p>{{ entry.product.category }}</p>
                     <div class="qty-row">
-                        <span>Qty: {{ entry.quantity }}</span>
-                        <a href="{% url 'remove_from_cart' entry.product.id %}" class="text-link">Remove</a>
+                        <span>Cantidad: {{ entry.quantity }}</span>
+                        <a href="{% url 'remove_from_cart' entry.product.id %}" class="text-link">Quitar</a>
                     </div>
                 </div>
-                <strong>${{ entry.product.price }}</strong>
+                <strong>{{ entry.product.price|cop }}</strong>
             </div>
             {% endfor %}
         </div>
 
         <aside class="summary-panel">
-            <h3>Order summary</h3>
-            <div class="summary-line"><span>Subtotal</span><span>${{ subtotal }}</span></div>
-            <div class="summary-line"><span>Shipping</span><span>Free</span></div>
-            <div class="summary-line total"><span>Total</span><span>${{ subtotal }}</span></div>
-            <a href="{% url 'checkout' %}" class="primary-btn full-width">Proceed to checkout</a>
+            <h3>Resumen del pedido</h3>
+            <div class="summary-line"><span>Subtotal</span><span>{{ subtotal|cop }}</span></div>
+            <div class="summary-line"><span>Envío</span><span>Gratis</span></div>
+            <div class="summary-line total"><span>Total</span><span>{{ subtotal|cop }}</span></div>
+            <a href="{% url 'checkout' %}" class="primary-btn full-width">Continuar al pago</a>
         </aside>
     </div>
     {% else %}
-    <div class="empty-state">Your cart is empty. Start with our latest arrivals.</div>
+    <div class="empty-state">Tu carrito está vacío. Explora la colección para encontrar tu próxima gorra.</div>
     {% endif %}
 </section>
 {% endblock %}

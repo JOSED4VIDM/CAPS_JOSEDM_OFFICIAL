@@ -1,18 +1,19 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Checkout{% endblock %}
+{% block title %}CAPZONE | Finalizar compra{% endblock %}
 {% block content %}
 <section class="container checkout-page">
     <div class="checkout-box">
-        <h2>Checkout</h2>
+        <span class="eyebrow">Último paso</span>
+        <h2>Finalizar compra</h2>
         <form method="post">
             {% csrf_token %}
-            <label>Shipping address
+            <label>Dirección de entrega
                 <textarea name="shipping_address" rows="4" required></textarea>
             </label>
-            <label>Contact phone
-                <input type="text" name="contact_phone" required>
+            <label>Teléfono de contacto
+                <input type="tel" name="contact_phone" autocomplete="tel" required>
             </label>
-            <button type="submit" class="primary-btn full-width">Complete purchase</button>
+            <button type="submit" class="primary-btn full-width">Confirmar pedido</button>
         </form>
     </div>
 </section>

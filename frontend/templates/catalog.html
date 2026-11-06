@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load currency %}
 {% block title %}CAPZONE | Gorras esenciales{% endblock %}
 {% block content %}
 <section class="hero">
     <div class="container hero-grid">
         <div class="hero-copy">
-            <span class="eyebrow">CAPZONE · Colección 2026</span>
+            <span class="eyebrow">CAPZONE · Colección actual</span>
             <h1>Tu estilo.<br>Tu forma de llevarlo.</h1>
             <p>Diseños esenciales, detalles cuidados y comodidad para acompañarte todos los días.</p>
             <div class="hero-actions">
@@ -33,10 +34,8 @@
     <div class="catalog-tools">
         <div class="category-filters" id="categories" role="group" aria-label="Filtrar por categoría">
             <button type="button" class="category-filter is-active" data-category-filter="all" aria-pressed="true">Todas</button>
-            {% for product in products %}
-                {% ifchanged product.category %}
-                <button type="button" class="category-filter" data-category-filter="{{ product.category|lower }}" aria-pressed="false">{{ product.category }}</button>
-                {% endifchanged %}
+            {% for category in categories %}
+                <button type="button" class="category-filter" data-category-filter="{{ category|lower }}" aria-pressed="false">{{ category }}</button>
             {% endfor %}
         </div>
         <div class="catalog-controls">
@@ -51,7 +50,10 @@
             </select>
         </div>
     </div>
-    <p class="catalog-count" aria-live="polite"></p>
+    <div class="catalog-meta">
+        <p class="catalog-count" aria-live="polite"></p>
+        <p class="currency-note">Precios en pesos colombianos (COP). Importes conservados sin conversión.</p>
+    </div>
 
     <div class="product-grid">
         {% for product in products %}
@@ -68,8 +70,8 @@
                     <span>{{ product.reviews }} opiniones</span>
                 </div>
                 <div class="price-block">
-                    <span class="price">${{ product.price|floatformat:2 }}</span>
-                    {% if product.original_price > product.price %}<span class="old-price">${{ product.original_price|floatformat:2 }}</span>{% endif %}
+                    <span class="price">{{ product.price|cop }}</span>
+                    {% if product.original_price > product.price %}<span class="old-price">{{ product.original_price|cop }}</span>{% endif %}
                 </div>
                 <div class="card-actions">
                     <a class="secondary-btn" href="{% url 'product_detail' product.slug %}">Ver detalles</a>

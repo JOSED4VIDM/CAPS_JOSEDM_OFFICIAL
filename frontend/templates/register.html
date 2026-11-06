@@ -1,27 +1,28 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Register{% endblock %}
+{% block title %}CAPZONE | Crear cuenta{% endblock %}
 {% block content %}
 <section class="container auth-page">
     <div class="auth-card">
         <div class="auth-tabs">
-            <a href="{% url 'login' %}" class="auth-tab">Login</a>
-            <a href="{% url 'register' %}" class="auth-tab active">Register</a>
+            <a href="{% url 'login' %}" class="auth-tab">Iniciar sesión</a>
+            <a href="{% url 'register' %}" class="auth-tab active">Crear cuenta</a>
         </div>
-        <h2>Create account</h2>
+        <span class="eyebrow">Únete a la comunidad</span>
+        <h2>Crea tu cuenta</h2>
         <form method="post">
             {% csrf_token %}
-            <label>Full name
-                <input type="text" name="full_name" required>
+            <label>Nombre completo
+                <input type="text" name="full_name" autocomplete="name" required>
             </label>
-            <label>Email
-                <input type="email" name="email" required>
+            <label>Correo electrónico
+                <input type="email" name="email" autocomplete="email" required>
             </label>
-            <label>Password
-                <input type="password" name="password" required>
+            <label>Contraseña
+                <input type="password" name="password" autocomplete="new-password" required>
             </label>
-            <button type="submit" class="primary-btn full-width">Create account</button>
+            <button type="submit" class="primary-btn full-width">Crear cuenta</button>
         </form>
-        <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        <p class="auth-switch">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
     </div>
 </section>
 {% endblock %}

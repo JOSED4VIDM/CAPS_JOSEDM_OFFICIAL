@@ -1,102 +1,94 @@
 PRODUCTS = [
     {
         "id": "p-101",
-        "name": "Urban Black Snapback",
+        "name": "Gorra New York Negra",
         "slug": "urban-black-snapback",
-        "category": "Snapback",
+        "category": "Béisbol",
         "price": 39.99,
         "original_price": 49.99,
         "rating": 4.8,
         "reviews": 128,
         "image_url": "https://images.unsplash.com/photo-1521369909026-2afc9123a8c7?auto=format&fit=crop&w=1200&q=80",
         "in_stock": True,
-        "description": "A premium urban snapback designed for everyday streetwear styling.",
-        "features": ["Structured fit", "Adjustable closure", "High-quality woven fabric"],
-        "tags": ["best seller", "streetwear"]
+        "description": "Gorra negra de perfil estructurado, inspirada en el clásico estilo de Nueva York.",
+        "features": ["Perfil estructurado", "Cierre ajustable", "Visera plana"],
+        "tags": ["más vendida", "urbano"]
     },
     {
         "id": "p-102",
-        "name": "Fresh Run Cap",
+        "name": "Gorra Bulls Roja",
         "slug": "fresh-run-cap",
-        "category": "Sport",
+        "category": "Baloncesto",
         "price": 34.99,
         "original_price": 44.99,
         "rating": 4.7,
         "reviews": 94,
         "image_url": "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?auto=format&fit=crop&w=1200&q=80",
         "in_stock": True,
-        "description": "Breathable sports cap for training days, travel, and active routines.",
-        "features": ["Breathable mesh", "Moisture control", "Flexible fit"],
-        "tags": ["sport", "new"]
+        "description": "Diseño rojo de alto contraste para sumar carácter a cualquier combinación urbana.",
+        "features": ["Color rojo intenso", "Cierre ajustable", "Diseño urbano"],
+        "tags": ["deporte", "novedad"]
     },
     {
         "id": "p-103",
-        "name": "Monarch Flex Cap",
+        "name": "Gorra Los Angeles Beige",
         "slug": "monarch-flex-cap",
-        "category": "Premium",
+        "category": "Béisbol",
         "price": 52.99,
         "original_price": 64.99,
         "rating": 4.9,
         "reviews": 211,
         "image_url": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80",
         "in_stock": True,
-        "description": "A luxury finish cap with premium textures and a polished profile.",
-        "features": ["Premium embroidery", "Structured crown", "Luxury finish"],
-        "tags": ["premium", "limited"]
+        "description": "Tono beige versátil con un perfil limpio para usar todos los días.",
+        "features": ["Tono beige", "Perfil estructurado", "Cierre ajustable"],
+        "tags": ["estilo", "clásica"]
     },
     {
         "id": "p-104",
-        "name": "Night Shift Beanie",
+        "name": "Gorra Raiders Negra",
         "slug": "night-shift-beanie",
-        "category": "Accessories",
+        "category": "Fútbol americano",
         "price": 29.99,
         "original_price": 39.99,
         "rating": 4.6,
         "reviews": 73,
         "image_url": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=80",
         "in_stock": False,
-        "description": "A laid-back beanie for modern comfort and a refined, colder-weather look.",
-        "features": ["Soft knit", "Warm interior", "Minimal shape"],
-        "tags": ["winter", "favorites"]
+        "description": "Una silueta negra clásica con detalles gráficos para un estilo decidido.",
+        "features": ["Diseño negro", "Cierre ajustable", "Visera plana"],
+        "tags": ["urbano", "clásica"]
     },
     {
         "id": "p-105",
-        "name": "The Street Pro",
+        "name": "Gorra Chicago a Rayas",
         "slug": "the-street-pro",
-        "category": "Urban",
+        "category": "Béisbol",
         "price": 46.99,
         "original_price": 58.99,
         "rating": 4.8,
         "reviews": 186,
         "image_url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
         "in_stock": True,
-        "description": "Built for everyday city energy, with a modern silhouette and flexible comfort.",
-        "features": ["Flexible profile", "Everyday feel", "Contemporary design"],
-        "tags": ["urban", "popular"]
+        "description": "Gorra negra a rayas con visera blanca, una mezcla deportiva y atemporal.",
+        "features": ["Patrón a rayas", "Visera blanca", "Cierre ajustable"],
+        "tags": ["rayas", "deportiva"]
     },
     {
         "id": "p-106",
-        "name": "Crest Vintage Cap",
+        "name": "Gorra Miami Negra y Roja",
         "slug": "crest-vintage-cap",
-        "category": "Retro",
+        "category": "Baloncesto",
         "price": 41.49,
         "original_price": 52.99,
         "rating": 4.7,
         "reviews": 142,
         "image_url": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1200&q=80",
         "in_stock": True,
-        "description": "A vintage-inspired cap with timeless proportions and a premium finish.",
-        "features": ["Retro finish", "Classic profile", "Premium lining"],
-        "tags": ["vintage", "drop"]
+        "description": "Base negra con detalles rojos para un contraste distintivo y actual.",
+        "features": ["Detalles rojos", "Perfil estructurado", "Cierre ajustable"],
+        "tags": ["urbano", "novedad"]
     },
 ]
 
-USERS = [
-    {
-        "id": "u-001",
-        "full_name": "Admin CAPZONE",
-        "email": "admin@capzone.com",
-        "password": "admin123",
-        "is_admin": True
-    }
-]
+USERS = []
