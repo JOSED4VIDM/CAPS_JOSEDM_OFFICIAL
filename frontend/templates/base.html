@@ -30,6 +30,9 @@
                 {% elif request.session.user %}
                     <a href="{% url 'customer_account' %}">Mi cuenta</a>
                 {% endif %}
+                {% if not request.session.user.is_admin %}
+                    <a href="{% url 'admin_login' %}">Acceso administración</a>
+                {% endif %}
                 <div class="mobile-auth-links">
                     {% if request.session.user %}
                     <a href="{% url 'customer_account' %}">Mi cuenta</a>
@@ -38,6 +41,9 @@
                     {% else %}
                     <a href="{% url 'login' %}">Iniciar sesión</a>
                     <a href="{% url 'register' %}">Crear cuenta</a>
+                    {% endif %}
+                    {% if not request.session.user.is_admin %}
+                    <a href="{% url 'admin_login' %}">Acceso administración</a>
                     {% endif %}
                 </div>
             </nav>

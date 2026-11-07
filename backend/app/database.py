@@ -5,7 +5,7 @@ from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.config import DEBUG, MONGODB_URL
+from app.config import DEBUG, MONGODB_DATABASE, MONGODB_PRODUCTS_COLLECTION, MONGODB_URL
 
 logger = logging.getLogger(__name__)
 client: AsyncIOMotorClient | None = None
@@ -29,7 +29,7 @@ async def initialize_database() -> None:
 
     try:
         client = AsyncIOMotorClient(MONGODB_URL, serverSelectionTimeoutMS=5000)
-        db = client["techgear"]
+        db = client[MONGODB_DATABASE]
         await db.command("ping")
         logger.info("Connected to MongoDB Atlas successfully.")
     except Exception as exc:  # pragma: no cover - runtime dependency on external service
@@ -43,13 +43,14 @@ async def initialize_database() -> None:
 
 
 def get_collection(name: str):
-    return db[name] if mongodb_enabled() else None
+    collection_name = MONGODB_PRODUCTS_COLLECTION if name == "products" else name
+    return db[collection_name] if mongodb_enabled() else None
 
 
 async def ensure_indexes():
     if not mongodb_enabled():
         return
-    products = db["products"]
+    products = db[MONGODB_PRODUCTS_COLLECTION]
     await products.create_index("slug", unique=True)
     await products.create_index("category")
     users = db["users"]

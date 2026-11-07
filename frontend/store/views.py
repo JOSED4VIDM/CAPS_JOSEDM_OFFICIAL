@@ -219,13 +219,20 @@ def checkout(request: HttpRequest):
     return render(request, "checkout.html", {"cart_count": cart_summary(request)})
 
 
-def login_view(request: HttpRequest):
+def login_view(request: HttpRequest, admin_only: bool = False):
     if request.method == "POST":
         payload = {"email": request.POST.get("email"), "password": request.POST.get("password")}
         try:
             response = requests.post(f"{API_URL}/api/auth/login", json=payload, timeout=10)
             data = response.json()
             if response.ok:
+                if admin_only and not data["user"].get("is_admin"):
+                    messages.error(request, "Esta cuenta no tiene permisos de administración.")
+                    return render(
+                        request,
+                        "login.html",
+                        {"cart_count": cart_summary(request), "admin_login": True},
+                    )
                 request.session["token"] = data["token"]
                 request.session["user"] = data["user"]
                 messages.success(request, "Inicio de sesión correcto")
@@ -241,7 +248,11 @@ def login_view(request: HttpRequest):
             messages.error(request, translated_errors.get(detail, detail or "El correo o la contraseña no son correctos."))
         except requests.RequestException:
             messages.error(request, "No fue posible iniciar sesión. Inténtalo de nuevo.")
-    return render(request, "login.html", {"cart_count": cart_summary(request)})
+    return render(
+        request,
+        "login.html",
+        {"cart_count": cart_summary(request), "admin_login": admin_only},
+    )
 
 
 def register_view(request: HttpRequest):
@@ -327,42 +338,99 @@ def admin_dashboard(request: HttpRequest):
     user = request.session.get("user")
     token = request.session.get("token")
     if not user or not token:
-        messages.info(request, "Inicia sesión con la cuenta de administración.")
-        return redirect("login")
+        messages.info(request, "Inicia sesi?n con la cuenta de administraci?n.")
+        return redirect("admin_login")
     if not user.get("is_admin"):
-        messages.error(request, "Esta sección es exclusiva para administración.")
+        messages.error(request, "Esta secci?n es exclusiva para administraci?n.")
         return redirect("customer_account")
 
     headers = {"Authorization": f"Bearer {token}"}
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "create_product":
+            name = (request.POST.get("name") or "").strip()
+            category = (request.POST.get("category") or "").strip()
+            description = (request.POST.get("description") or "").strip()
+            image_url = (request.POST.get("image_url") or "").strip()
+            price_raw = request.POST.get("price", "0")
+            try:
+                price = float(price_raw)
+            except (TypeError, ValueError):
+                price = 0.0
+            if not name or not category or not description or price <= 0:
+                messages.error(request, "Completa nombre, categor?a, descripci?n y precio v?lido.")
+            else:
+                payload = {
+                    "name": name,
+                    "category": category,
+                    "price": price,
+                    "original_price": round(price * 1.2, 2),
+                    "rating": 0.0,
+                    "reviews": 0,
+                    "image_url": image_url or "https://images.unsplash.com/photo-1521369909026-2afc9123a8c7?auto=format&fit=crop&w=1200&q=80",
+                    "in_stock": request.POST.get("in_stock") == "on",
+                    "description": description,
+                    "features": [item.strip() for item in request.POST.get("features", "").split(",") if item.strip()],
+                    "tags": [category.lower()],
+                }
+                try:
+                    response = requests.post(f"{API_URL}/api/products", json=payload, headers=headers, timeout=10)
+                    if response.ok:
+                        messages.success(request, "Producto a?adido correctamente.")
+                    else:
+                        details = response.json()
+                        messages.error(request, details.get("detail", "No se pudo crear el producto."))
+                except requests.RequestException:
+                    messages.error(request, "No fue posible crear el producto. Int?ntalo de nuevo.")
+        elif action == "delete_product":
+            product_id = request.POST.get("product_id", "").strip()
+            if not product_id:
+                messages.error(request, "No se indic? el producto a eliminar.")
+            else:
+                try:
+                    response = requests.delete(f"{API_URL}/api/products/{product_id}", headers=headers, timeout=10)
+                    if response.ok:
+                        messages.success(request, "Producto eliminado correctamente.")
+                    else:
+                        details = response.json()
+                        messages.error(request, details.get("detail", "No se pudo eliminar el producto."))
+                except requests.RequestException:
+                    messages.error(request, "No fue posible eliminar el producto. Int?ntalo de nuevo.")
+
     try:
         summary_response = requests.get(f"{API_URL}/api/admin/summary", headers=headers, timeout=10)
         summary_response.raise_for_status()
         orders_response = requests.get(f"{API_URL}/api/orders", headers=headers, timeout=10)
         orders_response.raise_for_status()
+        products_response = requests.get(f"{API_URL}/api/products", headers=headers, timeout=10)
+        products_response.raise_for_status()
         stats = summary_response.json()
         orders = orders_response.json()
+        products = products_response.json()
     except requests.HTTPError as exc:
         if exc.response is not None and exc.response.status_code == 401:
             request.session.pop("token", None)
             request.session.pop("user", None)
-            messages.error(request, "Tu sesión venció. Inicia sesión de nuevo.")
-            return redirect("login")
-        messages.error(request, "No tienes permiso para consultar la administración.")
+            messages.error(request, "Tu sesi?n venci?. Inicia sesi?n de nuevo.")
+            return redirect("admin_login")
+        messages.error(request, "No tienes permiso para consultar la administraci?n.")
         return redirect("customer_account")
     except requests.RequestException:
-        messages.error(request, "No fue posible cargar la información de administración.")
+        messages.error(request, "No fue posible cargar la informaci?n de administraci?n.")
         stats = None
         orders = []
+        products = []
 
-    products = {product["id"]: product for product in get_products()}
+    product_map = {product["id"]: product for product in get_products()}
     for order in orders:
         order["status"] = translate_order_status(order.get("status", "pendiente"))
         for item in order.get("items", []):
-            product = products.get(item.get("product_id"))
+            product = product_map.get(item.get("product_id"))
             item["product_name"] = product["name"] if product else "Producto"
 
     return render(
         request,
         "admin_dashboard.html",
-        {"stats": stats, "orders": orders, "cart_count": cart_summary(request)},
+        {"stats": stats, "orders": orders, "products": products, "cart_count": cart_summary(request)},
     )

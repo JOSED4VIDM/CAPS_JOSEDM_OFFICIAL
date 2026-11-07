@@ -1,14 +1,19 @@
 {% extends "base.html" %}
-{% block title %}CAPZONE | Iniciar sesión{% endblock %}
+{% block title %}{% if admin_login %}CAPZONE | Acceso administración{% else %}CAPZONE | Iniciar sesión{% endif %}{% endblock %}
 {% block content %}
 <section class="container auth-page">
     <div class="auth-card">
         <div class="auth-tabs">
-            <a href="{% url 'login' %}" class="auth-tab active">Iniciar sesión</a>
-            <a href="{% url 'register' %}" class="auth-tab">Crear cuenta</a>
+            {% if admin_login %}
+                <a href="{% url 'login' %}" class="auth-tab">Clientes</a>
+                <span class="auth-tab active">Administración</span>
+            {% else %}
+                <a href="{% url 'login' %}" class="auth-tab active">Iniciar sesión</a>
+                <a href="{% url 'register' %}" class="auth-tab">Crear cuenta</a>
+            {% endif %}
         </div>
-        <span class="eyebrow">Tu espacio CAPZONE</span>
-        <h2>Qué bueno verte</h2>
+        <span class="eyebrow">{% if admin_login %}Acceso exclusivo{% else %}Tu espacio CAPZONE{% endif %}</span>
+        <h2>{% if admin_login %}Administración CAPZONE{% else %}Qué bueno verte{% endif %}</h2>
         <form method="post">
             {% csrf_token %}
             <label>Correo electrónico
@@ -17,9 +22,13 @@
             <label>Contraseña
                 <input type="password" name="password" autocomplete="current-password" required>
             </label>
-            <button type="submit" class="primary-btn full-width">Ingresar</button>
+            <button type="submit" class="primary-btn full-width">{% if admin_login %}Ingresar a administración{% else %}Ingresar{% endif %}</button>
         </form>
-        <p class="auth-switch">¿Aún no tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+        {% if admin_login %}
+            <p class="auth-switch"><a href="{% url 'login' %}">Volver al inicio de sesión de clientes</a></p>
+        {% else %}
+            <p class="auth-switch">¿Aún no tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, List
 from uuid import uuid4
 
@@ -22,9 +24,48 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-PRODUCT_STORE: List[Dict[str, Any]] = [dict(item) for item in PRODUCTS]
-USER_STORE: List[Dict[str, Any]] = [dict(user) for user in USERS]
-ORDER_STORE: List[Dict[str, Any]] = []
+DATA_FILE = Path(__file__).resolve().parent / "local_store.json"
+
+
+def persist_local_store() -> None:
+    payload = {
+        "products": PRODUCT_STORE,
+        "users": USER_STORE,
+        "orders": ORDER_STORE,
+    }
+
+    def json_default(value: Any) -> str:
+        if isinstance(value, datetime):
+            return value.isoformat()
+        raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
+
+    with DATA_FILE.open("w", encoding="utf-8") as file:
+        json.dump(payload, file, ensure_ascii=False, indent=2, default=json_default)
+
+
+def load_local_store() -> None:
+    global PRODUCT_STORE, USER_STORE, ORDER_STORE
+    if not DATA_FILE.exists():
+        PRODUCT_STORE = [dict(item) for item in PRODUCTS]
+        USER_STORE = [dict(user) for user in USERS]
+        ORDER_STORE = []
+        persist_local_store()
+        return
+
+    try:
+        with DATA_FILE.open("r", encoding="utf-8") as file:
+            payload = json.load(file)
+        PRODUCT_STORE = payload.get("products", [dict(item) for item in PRODUCTS])
+        USER_STORE = payload.get("users", [dict(user) for user in USERS])
+        ORDER_STORE = payload.get("orders", [])
+    except (json.JSONDecodeError, OSError):
+        PRODUCT_STORE = [dict(item) for item in PRODUCTS]
+        USER_STORE = [dict(user) for user in USERS]
+        ORDER_STORE = []
+        persist_local_store()
+
+
+load_local_store()
 
 
 @app.on_event("startup")
@@ -62,6 +103,9 @@ async def startup_event():
         for user in USER_STORE:
             if user.get("email", "").lower() == "admin@capzone.com":
                 user["is_admin"] = False
+
+    if not mongodb_enabled():
+        persist_local_store()
 
 
 @app.on_event("shutdown")
@@ -137,7 +181,24 @@ async def create_product(payload: ProductCreate, _current_user: Dict[str, Any] =
         await products_collection.insert_one(product)
     else:
         PRODUCT_STORE.append(product)
+        persist_local_store()
     return product
+
+
+@app.delete("/api/products/{product_id}")
+async def delete_product(product_id: str, _current_user: Dict[str, Any] = Depends(require_admin)):
+    products_collection = get_collection("products")
+    if products_collection is not None:
+        result = await products_collection.delete_one({"id": product_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="El producto no existe.")
+    else:
+        existing = next((item for item in PRODUCT_STORE if item["id"] == product_id), None)
+        if existing is None:
+            raise HTTPException(status_code=404, detail="El producto no existe.")
+        PRODUCT_STORE[:] = [item for item in PRODUCT_STORE if item["id"] != product_id]
+        persist_local_store()
+    return {"success": True, "product_id": product_id}
 
 
 @app.post("/api/auth/register", response_model=User, status_code=status.HTTP_201_CREATED)
@@ -162,6 +223,7 @@ async def register_user(payload: UserCreate):
         await users_collection.insert_one(user)
     else:
         USER_STORE.append(user)
+        persist_local_store()
     return {"id": user["id"], "full_name": user["full_name"], "email": user["email"], "is_admin": user["is_admin"]}
 
 
@@ -214,6 +276,7 @@ async def create_order(payload: OrderCreate, current_user: Dict[str, Any] = Depe
         await orders_collection.insert_one(order)
     else:
         ORDER_STORE.append(order)
+        persist_local_store()
     return order
 
 

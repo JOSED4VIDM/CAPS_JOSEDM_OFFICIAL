@@ -19,7 +19,7 @@ Se recomienda Python 3.12 o posterior.
    pip install -r backend/requirements.txt
    pip install -r frontend/requirements.txt
    ```
-2. Configura los archivos `.env` del backend y del frontend a partir de sus archivos de ejemplo. En el backend configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`.
+2. Configura los archivos `.env` del backend y del frontend a partir de sus archivos de ejemplo. En el backend configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`. La aplicación guarda todos sus datos en la base `PROYECTOS`: productos en la colección `JOSE_DM_CAPS`, usuarios en `users` y pedidos en `orders`. Puedes cambiar la base con `MONGODB_DATABASE` y la colección de productos con `MONGODB_PRODUCTS_COLLECTION`.
 3. En una terminal, crea o actualiza la cuenta administradora. El comando solicita la contraseña de forma oculta y guarda únicamente su hash:
    ```bash
    cd backend
@@ -40,7 +40,7 @@ Se recomienda Python 3.12 o posterior.
 
 ## Notas de producción
 
-- Configura `MONGODB_URL` y `ADMIN_EMAIL` en el entorno del servicio backend.
+- Configura `MONGODB_URL`, `MONGODB_DATABASE=PROYECTOS`, `MONGODB_PRODUCTS_COLLECTION=JOSE_DM_CAPS` y `ADMIN_EMAIL` en el entorno del servicio backend.
 - El registro público no puede asignar el rol de administrador. Crea o actualiza esa cuenta desde la terminal del backend con `python -m app.bootstrap_admin`; la contraseña se solicita de forma oculta y solo se guarda su hash.
 - Configura `API_BASE_URL` en el entorno del frontend para que apunte al servicio FastAPI desplegado.
 - Despliega el `render.yaml` de la raíz como un Blueprint de Render para crear `capzone-web-api` y `capzone-web`.

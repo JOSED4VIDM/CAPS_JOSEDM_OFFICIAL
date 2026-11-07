@@ -379,6 +379,82 @@ input:focus, textarea:focus, select:focus { border-color: var(--ink); outline: n
 .order-card .summary-line.total { margin: 0 0 12px; padding: 0; border: 0; }
 .order-address { margin: 5px 0 0; color: var(--muted); font-size: .78rem; overflow-wrap: anywhere; }
 
+.admin-panel-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+    gap: 20px;
+    margin-top: 26px;
+}
+
+.admin-card {
+    padding: clamp(20px, 3vw, 28px);
+    border: 1px solid var(--line);
+    background: white;
+}
+
+.admin-product-form, .admin-product-list {
+    display: grid;
+    gap: 18px;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-direction: row !important;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.checkbox-row input {
+    width: auto;
+    min-height: auto;
+}
+
+.admin-product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+}
+
+.admin-product-item:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.admin-product-copy h3 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+}
+
+.admin-product-copy p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .82rem;
+}
+
+.inline-delete-form {
+    margin: 0;
+}
+
+.danger-btn {
+    border-color: #a83b3b;
+    color: #a83b3b;
+}
+
+.danger-btn:hover {
+    background: #fbe9e9;
+}
+
 .site-footer { margin-top: 42px; border-top: 1px solid var(--line); background: #faf9f7; padding-block: 38px; }
 .footer-content { display: flex; align-items: start; justify-content: space-between; gap: 24px; }
 .footer-content h4 { margin: 0 0 6px; font-size: .85rem; letter-spacing: .16em; }
