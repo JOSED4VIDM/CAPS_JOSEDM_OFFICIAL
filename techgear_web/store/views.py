@@ -120,7 +120,7 @@ def get_products():
             "in_stock": content["in_stock"],
             "description": content["description"],
             "features": content["features"],
-            "tags": ["colección CAPZONE"],
+            "tags": ["colección TechGear"],
         }
         for product_id, content in LOCAL_PRODUCT_CONTENT.items()
     ]

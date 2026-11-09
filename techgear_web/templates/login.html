@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if admin_login %}CAPZONE | Acceso administración{% else %}CAPZONE | Iniciar sesión{% endif %}{% endblock %}
+{% block title %}{% if admin_login %}TechGear | Acceso administración{% else %}TechGear | Iniciar sesión{% endif %}{% endblock %}
 {% block content %}
 <section class="container auth-page">
     <div class="auth-card">
@@ -12,8 +12,8 @@
                 <a href="{% url 'register' %}" class="auth-tab">Crear cuenta</a>
             {% endif %}
         </div>
-        <span class="eyebrow">{% if admin_login %}Acceso exclusivo{% else %}Tu espacio CAPZONE{% endif %}</span>
-        <h2>{% if admin_login %}Administración CAPZONE{% else %}Qué bueno verte{% endif %}</h2>
+        <span class="eyebrow">{% if admin_login %}Acceso exclusivo{% else %}Tu espacio TechGear{% endif %}</span>
+        <h2>{% if admin_login %}Administración TechGear{% else %}Qué bueno verte{% endif %}</h2>
         <form method="post">
             {% csrf_token %}
             <label>Correo electrónico

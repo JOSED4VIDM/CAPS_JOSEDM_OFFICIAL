@@ -1,1 +1,1 @@
-"""CAPZONE FastAPI backend package."""
+"""TechGear FastAPI backend package."""

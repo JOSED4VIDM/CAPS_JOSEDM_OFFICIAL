@@ -15,7 +15,7 @@ from app.models import Order, OrderCreate, Product, ProductCreate, User, UserCre
 from app.seed_data import PRODUCTS, USERS
 from app.security import create_access_token, get_current_user, hash_password, verify_password
 
-app = FastAPI(title="CAPZONE API", version="1.0.0", description="Servicio de API para la tienda CAPZONE.")
+app = FastAPI(title="TechGear API", version="1.0.0", description="Servicio de API para la tienda TechGear.")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -115,7 +115,7 @@ async def shutdown_event():
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "debug": DEBUG, "service": "capzone-api", "mongodb_connected": mongodb_enabled()}
+    return {"status": "ok", "debug": DEBUG, "service": "techgear-api", "mongodb_connected": mongodb_enabled()}
 
 
 async def read_products_from_store():
