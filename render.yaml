@@ -3,7 +3,7 @@ services:
     name: capzone-web-api
     runtime: python
     plan: free
-    rootDir: backend
+    rootDir: techgear_api
     buildCommand: pip install -r requirements.txt
     startCommand: if [ -n "$ADMIN_PASSWORD" ]; then python -m app.bootstrap_admin; fi && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health
@@ -27,7 +27,7 @@ services:
     name: capzone-web
     runtime: python
     plan: free
-    rootDir: frontend
+    rootDir: techgear_web
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: python manage.py migrate --noinput && gunicorn capzone_django.wsgi:application --bind 0.0.0.0:$PORT
     envVars:

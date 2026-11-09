@@ -17,7 +17,7 @@ Los dominios publicados actualmente en Render son `capzone-web` y `capzone-web-a
 
 ```text
 .
-├── backend/                     # API REST (servicio techgear_api)
+├── techgear_api/                # API REST
 │   ├── app/
 │   │   ├── main.py              # Inicio de FastAPI y endpoints
 │   │   ├── models.py            # Esquemas de productos, usuarios y pedidos
@@ -28,7 +28,7 @@ Los dominios publicados actualmente en Render son `capzone-web` y `capzone-web-a
 │   │   └── bootstrap_admin.py   # Creación o actualización del administrador
 │   ├── .env.example             # Plantilla de configuración local
 │   └── requirements.txt         # Dependencias de la API
-├── frontend/                    # Sitio web (servicio techgear_web)
+├── techgear_web/                # Aplicación web
 │   ├── capzone_django/          # Configuración, URLs y servidor WSGI
 │   ├── store/                   # Rutas, vistas y lógica de la tienda
 │   ├── templates/               # Páginas HTML renderizadas por Django
@@ -41,9 +41,9 @@ Los dominios publicados actualmente en Render son `capzone-web` y `capzone-web-a
 
 ### ¿Qué hace cada parte?
 
-**API (`backend/`, servicio `techgear_api`).** Expone endpoints HTTP y gestiona los datos, MongoDB, autenticación y pedidos. Su documentación interactiva está en `/docs`.
+**API (`techgear_api/`).** Expone endpoints HTTP y gestiona los datos, MongoDB, autenticación y pedidos. Su documentación interactiva está en `/docs`.
 
-**Web (`frontend/`, servicio `techgear_web`).** Entrega la experiencia de usuario mediante Django y consume la API configurada con `API_BASE_URL`.
+**Web (`techgear_web/`).** Entrega la experiencia de usuario mediante Django y consume la API configurada con `API_BASE_URL`.
 
 **Render (`render.yaml`).** Define ambos servicios como aplicaciones web independientes, con su directorio raíz, dependencias, comando de inicio y variables de entorno.
 
@@ -62,18 +62,18 @@ Ejecuta estos comandos desde la carpeta raíz del proyecto para crear un entorno
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install -r backend/requirements.txt
-pip install -r frontend/requirements.txt
+pip install -r techgear_api/requirements.txt
+pip install -r techgear_web/requirements.txt
 ```
 
 Crea la configuración local copiando las plantillas. No subas los archivos `.env` ni sus credenciales a Git:
 
 ```powershell
-Copy-Item backend/.env.example backend/.env
-Copy-Item frontend/.env.example frontend/.env
+Copy-Item techgear_api/.env.example techgear_api/.env
+Copy-Item techgear_web/.env.example techgear_web/.env
 ```
 
-En `backend/.env`, configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`. La aplicación usa la base de datos `PROYECTOS`, la colección de productos `JOSE_DM_CAPS` y las colecciones `users` y `orders`. Puedes cambiar la base con `MONGODB_DATABASE` y la colección con `MONGODB_PRODUCTS_COLLECTION`.
+En `techgear_api/.env`, configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`. La aplicación usa la base de datos `PROYECTOS`, la colección de productos `JOSE_DM_CAPS` y las colecciones `users` y `orders`. Puedes cambiar la base con `MONGODB_DATABASE` y la colección con `MONGODB_PRODUCTS_COLLECTION`.
 
 ## Ejecutar en desarrollo
 
@@ -82,7 +82,7 @@ Abre una terminal para cada servicio, comenzando desde la raíz del repositorio.
 ### 1. Iniciar la API
 
 ```powershell
-cd backend
+cd techgear_api
 python -m app.bootstrap_admin
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
@@ -92,7 +92,7 @@ El comando de bootstrap crea o actualiza la cuenta administradora y solicita una
 ### 2. Iniciar la tienda web
 
 ```powershell
-cd frontend
+cd techgear_web
 python manage.py migrate
 python manage.py runserver 127.0.0.1:8001
 ```

@@ -10,7 +10,7 @@ from app.security import hash_password
 
 async def bootstrap_admin() -> None:
     if not ADMIN_EMAIL:
-        raise RuntimeError("Configura ADMIN_EMAIL en backend/.env antes de crear el administrador.")
+        raise RuntimeError("Configura ADMIN_EMAIL en techgear_api/.env antes de crear el administrador.")
 
     await initialize_database()
     try:
