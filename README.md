@@ -1,94 +1,114 @@
-# CAPZONE
+# TechGear | Tienda de gorras
 
-CAPZONE is a hybrid e-commerce project built with Django on the frontend and FastAPI on the backend. The storefront provides a premium catalog experience for urban and sports caps, while the API handles products, authentication, cart, and order logic.
+Aplicación de comercio electrónico compuesta por una tienda web y una API independiente. La tienda Django presenta el catálogo y las funciones de compra; la API FastAPI administra productos, usuarios, autenticación y pedidos.
 
-## Architecture
+## Aplicación en producción
 
-- Backend: FastAPI + Pydantic + MongoDB-ready storage
-- Frontend: Django MVT + templates + static assets
-- Database: MongoDB Atlas (production) with in-memory fallback for local development
+| Componente | Enlace | Descripción |
+| --- | --- | --- |
+| Tienda web | [Abrir TechGear Web](https://capzone-web.onrender.com) | Sitio para explorar el catálogo y usar la tienda. |
+| API REST | [Abrir TechGear API](https://capzone-web-api.onrender.com) | Servicio de datos y lógica de negocio. |
+| Documentación de la API | [Abrir Swagger UI](https://capzone-web-api.onrender.com/docs) | Explorar y probar los endpoints disponibles. |
+| Salud de la API | [Comprobar estado](https://capzone-web-api.onrender.com/api/health) | Verificar que la API está respondiendo. |
 
-## Ejecución local
+Los dominios publicados actualmente en Render son `capzone-web` y `capzone-web-api`.
 
-Se recomienda Python 3.12 o posterior.
+## Estructura del repositorio
 
-1. Crea un entorno virtual e instala las dependencias desde la raíz del proyecto:
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate
-   pip install -r backend/requirements.txt
-   pip install -r frontend/requirements.txt
-   ```
-2. Configura los archivos `.env` del backend y del frontend a partir de sus archivos de ejemplo. En el backend configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`. Puedes guardar la contraseña permanente en `ADMIN_PASSWORD` del `.env` local (no uses el archivo de ejemplo ni la subas a Git). La aplicación guarda todos sus datos en la base `PROYECTOS`: productos en la colección `JOSE_DM_CAPS`, usuarios en `users` y pedidos en `orders`. Puedes cambiar la base con `MONGODB_DATABASE` y la colección de productos con `MONGODB_PRODUCTS_COLLECTION`.
-3. En una terminal, crea o actualiza la cuenta administradora. Si `ADMIN_PASSWORD` está configurada, se usará para crear o actualizar la cuenta; de lo contrario, el comando la solicita de forma oculta. En ambos casos se guarda únicamente su hash:
-   ```bash
-   cd backend
-   python -m app.bootstrap_admin
-   ```
-4. En una terminal, inicia la API:
-   ```bash
-   cd backend
-   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-   ```
-5. En otra terminal, inicia la tienda:
-   ```bash
-   cd frontend
-   python manage.py migrate
-   python manage.py runserver 127.0.0.1:8001
-   ```
-6. Abre http://127.0.0.1:8001/login/ e inicia sesión con el correo configurado en `ADMIN_EMAIL` y la contraseña elegida en el paso 3. El panel está en http://127.0.0.1:8001/admin-dashboard/ y la cuenta de cliente en http://127.0.0.1:8001/mi-cuenta/. La documentación de la API está en http://127.0.0.1:8000/docs.
+```text
+.
+├── backend/                     # API REST (servicio techgear_api)
+│   ├── app/
+│   │   ├── main.py              # Inicio de FastAPI y endpoints
+│   │   ├── models.py            # Esquemas de productos, usuarios y pedidos
+│   │   ├── database.py          # Conexión y operaciones con MongoDB
+│   │   ├── security.py          # Autenticación, tokens y contraseñas
+│   │   ├── config.py            # Configuración del servicio
+│   │   ├── seed_data.py         # Datos iniciales para desarrollo
+│   │   └── bootstrap_admin.py   # Creación o actualización del administrador
+│   ├── .env.example             # Plantilla de configuración local
+│   └── requirements.txt         # Dependencias de la API
+├── frontend/                    # Sitio web (servicio techgear_web)
+│   ├── capzone_django/          # Configuración, URLs y servidor WSGI
+│   ├── store/                   # Rutas, vistas y lógica de la tienda
+│   ├── templates/               # Páginas HTML renderizadas por Django
+│   ├── static/                  # CSS, JavaScript e imágenes
+│   ├── manage.py                # Comandos de administración de Django
+│   ├── .env.example             # Plantilla de configuración local
+│   └── requirements.txt         # Dependencias del sitio web
+└── render.yaml                  # Configuración de los dos servicios en Render
+```
 
-## Notas de producción
+### ¿Qué hace cada parte?
 
-- Configura `MONGODB_URL`, `MONGODB_DATABASE=PROYECTOS`, `MONGODB_PRODUCTS_COLLECTION=JOSE_DM_CAPS` y `ADMIN_EMAIL` en el entorno del servicio backend.
-- El registro público no puede asignar el rol de administrador. En Render, configura `ADMIN_PASSWORD` como variable secreta del servicio API; el comando de inicio ejecuta `python -m app.bootstrap_admin` para crear o actualizar la cuenta antes de arrancar la API. En otros entornos puedes ejecutar ese comando manualmente. Solo se guarda el hash en la base de datos.
-- Configura `API_BASE_URL` en el entorno del frontend para que apunte al servicio FastAPI desplegado.
-- Despliega el `render.yaml` de la raíz como un Blueprint de Render para crear `capzone-web-api` y `capzone-web`.
-- No incluyas la cadena de conexión de Atlas ni otras credenciales en Git.
-# CAPZONE
+**API (`backend/`, servicio `techgear_api`).** Expone endpoints HTTP y gestiona los datos, MongoDB, autenticación y pedidos. Su documentación interactiva está en `/docs`.
 
-CAPZONE is a hybrid e-commerce project built with Django on the frontend and FastAPI on the backend. The storefront provides a premium catalog experience for urban and sports caps, while the API handles products, authentication, cart, and order logic.
+**Web (`frontend/`, servicio `techgear_web`).** Entrega la experiencia de usuario mediante Django y consume la API configurada con `API_BASE_URL`.
 
-## Architecture
+**Render (`render.yaml`).** Define ambos servicios como aplicaciones web independientes, con su directorio raíz, dependencias, comando de inicio y variables de entorno.
 
-- Backend: FastAPI + Pydantic + MongoDB-ready storage
-- Frontend: Django MVT + templates + static assets
-- Database: MongoDB Atlas (production) with in-memory fallback for local development
+## Tecnologías
 
-## Ejecución local
+Python, FastAPI y Pydantic para la API; Django, plantillas MVT, HTML, CSS y JavaScript para la tienda; MongoDB Atlas para persistencia en producción; Render para el alojamiento.
 
-Se recomienda Python 3.12 o posterior.
+## Requisitos
 
-1. Crea un entorno virtual e instala las dependencias desde la raíz del proyecto:
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate
-   pip install -r backend/requirements.txt
-   pip install -r frontend/requirements.txt
-   ```
-2. Configura los archivos `.env` del backend y del frontend a partir de sus archivos de ejemplo. En el backend configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`. La aplicación guarda todos sus datos en la base `PROYECTOS`: productos en la colección `JOSE_DM_CAPS`, usuarios en `users` y pedidos en `orders`. Puedes cambiar la base con `MONGODB_DATABASE` y la colección de productos con `MONGODB_PRODUCTS_COLLECTION`.
-3. En una terminal, crea o actualiza la cuenta administradora. El comando solicita la contraseña de forma oculta y guarda únicamente su hash:
-   ```bash
-   cd backend
-   python -m app.bootstrap_admin
-   ```
-4. En una terminal, inicia la API:
-   ```bash
-   cd backend
-   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-   ```
-5. En otra terminal, inicia la tienda:
-   ```bash
-   cd frontend
-   python manage.py migrate
-   python manage.py runserver 127.0.0.1:8001
-   ```
-6. Abre http://127.0.0.1:8001/login/ e inicia sesión con el correo configurado en `ADMIN_EMAIL` y la contraseña elegida en el paso 3. El panel está en http://127.0.0.1:8001/admin-dashboard/ y la cuenta de cliente en http://127.0.0.1:8001/mi-cuenta/. La documentación de la API está en http://127.0.0.1:8000/docs.
+Se recomienda Python 3.12 o posterior. Para producción, configura una instancia de MongoDB Atlas y las variables de entorno indicadas en la sección de despliegue.
 
-## Notas de producción
+## Preparación local en Windows
 
-- Configura `MONGODB_URL`, `MONGODB_DATABASE=PROYECTOS`, `MONGODB_PRODUCTS_COLLECTION=JOSE_DM_CAPS` y `ADMIN_EMAIL` en el entorno del servicio backend.
-- El registro público no puede asignar el rol de administrador. Crea o actualiza esa cuenta desde la terminal del backend con `python -m app.bootstrap_admin`; la contraseña se solicita de forma oculta y solo se guarda su hash.
-- Configura `API_BASE_URL` en el entorno del frontend para que apunte al servicio FastAPI desplegado.
-- Despliega el `render.yaml` de la raíz como un Blueprint de Render para crear `capzone-web-api` y `capzone-web`.
-- No incluyas la cadena de conexión de Atlas ni otras credenciales en Git.
+Ejecuta estos comandos desde la carpeta raíz del proyecto para crear un entorno e instalar las dependencias:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r backend/requirements.txt
+pip install -r frontend/requirements.txt
+```
+
+Crea la configuración local copiando las plantillas. No subas los archivos `.env` ni sus credenciales a Git:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env
+```
+
+En `backend/.env`, configura `MONGODB_URL`, `SECRET_KEY` y `ADMIN_EMAIL`. La aplicación usa la base de datos `PROYECTOS`, la colección de productos `JOSE_DM_CAPS` y las colecciones `users` y `orders`. Puedes cambiar la base con `MONGODB_DATABASE` y la colección con `MONGODB_PRODUCTS_COLLECTION`.
+
+## Ejecutar en desarrollo
+
+Abre una terminal para cada servicio, comenzando desde la raíz del repositorio.
+
+### 1. Iniciar la API
+
+```powershell
+cd backend
+python -m app.bootstrap_admin
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+El comando de bootstrap crea o actualiza la cuenta administradora y solicita una contraseña segura si `ADMIN_PASSWORD` no está definida. La API queda en [http://127.0.0.1:8000](http://127.0.0.1:8000) y la documentación local en [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+### 2. Iniciar la tienda web
+
+```powershell
+cd frontend
+python manage.py migrate
+python manage.py runserver 127.0.0.1:8001
+```
+
+Abre la tienda en [http://127.0.0.1:8001](http://127.0.0.1:8001). El panel está en `/admin-dashboard/` y la cuenta de cliente en `/mi-cuenta/`.
+
+## Despliegue en Render
+
+El archivo `render.yaml` permite crear ambos servicios mediante un Blueprint conectado al repositorio.
+
+### Variables del servicio API
+
+Configura `MONGODB_URL`, `ADMIN_EMAIL` y `ADMIN_PASSWORD`. Usa una `SECRET_KEY` segura y asegúrate de que `ALLOWED_ORIGINS` incluya el dominio de la tienda. Las credenciales deben guardarse como secretos en Render.
+
+### Variables del servicio web
+
+Configura `API_BASE_URL` con la URL pública de la API, además de `SECRET_KEY`, `DEBUG=false` y `ALLOWED_HOSTS` para el dominio de la tienda.
+
+El registro público no puede asignar permisos de administrador. El comando `python -m app.bootstrap_admin` prepara esa cuenta y almacena únicamente el hash de la contraseña.
